@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#canvas {
+  display: block;
+  cursor: crosshair;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* Subtle outer glow for the retro CRT feel */
+  box-shadow: 0 0 40px rgba(233, 69, 96, 0.3), 0 0 80px rgba(0, 255, 255, 0.1);
+}

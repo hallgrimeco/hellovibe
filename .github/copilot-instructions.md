@@ -73,18 +73,34 @@ Hi-score is the only persisted data, stored via `localStorage` with the key `sur
 
 ## Conventions
 
-### Commit Style
+### Commit & Push Discipline
+
+**Commit and push to `origin/master` frequently** — after every meaningful unit of work (a new feature, a bug fix, a refactor). Never leave significant work uncommitted. This ensures the repository always reflects a working, recoverable state.
+
+Commit at natural checkpoints, for example:
+- After scaffolding a new file or game
+- After each gameplay feature is working
+- After a bug is fixed
+- After updating docs or config
 
 Use conventional commit prefixes:
 ```
 feat: add double-jump mechanic
 fix: prevent bullets spawning inside player
 refactor: extract wave-spawning into own function
+chore: update copilot instructions
 ```
 
 Always append the Co-authored-by trailer:
 ```
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+```
+
+Always push immediately after committing:
+```bash
+git add .
+git commit -m "feat: description"
+git push
 ```
 
 ### Code Style

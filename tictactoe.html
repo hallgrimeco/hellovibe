@@ -134,7 +134,7 @@
 
   <script>
     const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    let board, current, gameOver, score = { X: 0, O: 0, Draw: 0 };
+    let board, current, gameOver, nextStarter = 'X', score = { X: 0, O: 0, Draw: 0 };
 
     const cells   = document.querySelectorAll('.cell');
     const status  = document.getElementById('status');
@@ -144,13 +144,13 @@
 
     function init() {
       board = Array(9).fill(null);
-      current = 'X';
+      current = nextStarter;
       gameOver = false;
       cells.forEach(c => {
         c.textContent = '';
         c.className = 'cell';
       });
-      status.textContent = `Player X's turn`;
+      status.textContent = `Player ${current}'s turn`;
     }
 
     function checkWin() {
@@ -178,11 +178,13 @@
           status.textContent = `🎉 Player ${current} wins!`;
           score[current]++;
           updateScore();
+          nextStarter = current === 'X' ? 'O' : 'X';
         } else if (board.every(Boolean)) {
           gameOver = true;
           status.textContent = `It's a draw!`;
           score.Draw++;
           updateScore();
+          nextStarter = nextStarter === 'X' ? 'O' : 'X';
         } else {
           current = current === 'X' ? 'O' : 'X';
           status.textContent = `Player ${current}'s turn`;

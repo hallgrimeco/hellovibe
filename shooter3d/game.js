@@ -515,16 +515,14 @@ function drawCrosshair() {
   const t  = player.adsT;
 
   if (t > 0.5) {
-    // Scope overlay: black everything outside a circle
+    // Scope overlay: darken everything OUTSIDE the circle using even-odd fill
     const rad = 62 + (1 - t) * 62;
     ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.96)';
-    ctx.fillRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.rect(0, 0, W, H);
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2, true);
+    ctx.fillStyle = 'rgba(0,0,0,0.88)';
+    ctx.fill('evenodd');
 
     // Scope ring
     ctx.strokeStyle = '#999';

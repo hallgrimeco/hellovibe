@@ -6,7 +6,8 @@ A collection of browser-based games built with vanilla HTML/CSS/JavaScript and t
 
 **Games:**
 - `tictactoe.html` — single-file two-player Tic Tac Toe
-- `shooter/` — multi-file top-down retro shooter (SURVIVOR)
+- `shooter/` — multi-file top-down retro shooter (SURVIVOR 2D)
+- `shooter3d/` — multi-file raycasting first-person wave shooter (SURVIVOR 3D)
 
 ## Running the Games
 
@@ -16,11 +17,14 @@ Open the relevant file directly in a browser. No server required.
 # Tic Tac Toe
 tictactoe.html
 
-# Shooter
+# Shooter 2D
 shooter/index.html
+
+# Shooter 3D
+shooter3d/index.html
 ```
 
-## Architecture: Shooter (`shooter/`)
+## Architecture: Shooter 2D (`shooter/`)
 
 The shooter is split across three files with a clear separation of roles:
 
@@ -70,6 +74,54 @@ All timers (hitFlash, shootCd, invincible, shakeDur, life) are in **milliseconds
 ### Persistence
 
 Hi-score is the only persisted data, stored via `localStorage` with the key `survivor_hi`.
+
+---
+
+## Architecture: Shooter 3D (`shooter3d/`)
+
+Same three-file structure as the 2D shooter. Same state machine (`STATE`, `gameState`), same `dt`-based loop.
+
+| File | Role |
+|------|------|
+| `index.html` | Canvas host only — no logic |
+| `style.css` | Layout and styling |
+| `game.js` | Raycaster, sprites, input, game logic |
+
+### Rendering: Raycasting (DDA)
+
+Uses the classic DDA raycasting algorithm (Wolfenstein-style). Key concepts:
+
+- **Map:** 20×20 tile grid — `0` = floor, `1` = outer wall, `2` = cover block
+- **Z-buffer:** `Z_BUF` (`Float32Array(W)`) stores per-column wall distance for correct sprite occlusion
+- **FOV:** `FOV_NORMAL = 60°` | `FOV_ADS = 20°` (≈3× zoom when aiming down sights)
+- **Fog:** walls fade to background color beyond `FOG_DIST = 14` tiles
+- Wall shading: NS-facing sides rendered darker than EW sides for depth cue
+
+### Sprites (Monsters)
+
+Enemies are rendered as billboarded pixel-art sprites using raw `ImageData` — **not** canvas shape calls. The sprite sheet is a 16×16 pixel array (`SPR_DATA`) baked once into a `Uint8ClampedArray` at startup. Each pixel is depth-tested against `Z_BUF` before being written to the frame buffer.
+
+### Controls (3D)
+
+| Input | Action |
+|-------|--------|
+| WASD | Move / strafe |
+| Mouse (Pointer Lock) | Look left/right |
+| LMB | Shoot |
+| RMB or Shift | Toggle ADS scope |
+| Escape | Release pointer lock / exit ADS |
+
+Mouse look requires Pointer Lock (`canvas.requestPointerLock()`). `mouse.dx` accumulates raw `movementX` each frame and is consumed in `update()`.
+
+### ADS Scope
+
+`player.adsT` is a 0–1 lerp value driven by `ADS_SPEED`. When `adsT > 0.5` the scope overlay is drawn:
+- **Even-odd fill** (`ctx.fill('evenodd')`) with a rect + counterclockwise arc darkens only *outside* the scope circle — the scene inside remains fully visible.
+- Do **not** use `destination-out` compositing for the scope; it erases scene pixels rather than revealing them.
+
+### Timers & Persistence
+
+Same conventions as the 2D shooter. Hi-score key: `survivor3d_hi`.
 
 ## Conventions
 

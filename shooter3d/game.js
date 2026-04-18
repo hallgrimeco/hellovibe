@@ -286,6 +286,7 @@ function spawnWave() {
 function castRays() {
   const dX = pDirX(), dY = pDirY();
   const pX = pPlaneX(), pY = pPlaneY();
+  const projDist = W / (2 * Math.tan(player.fov / 2));
 
   for (let col = 0; col < W; col++) {
     const camX  = 2 * col / W - 1;
@@ -313,7 +314,7 @@ function castRays() {
     const perpDist = side === 0 ? (sdX - ddX) : (sdY - ddY);
     Z_BUF[col] = perpDist;
 
-    const lineH    = Math.min(H * 4, (H / perpDist) | 0);
+    const lineH    = Math.min(H * 4, (projDist / perpDist) | 0);
     const drawTop  = Math.max(0, ((H - lineH) / 2) | 0);
     const drawBot  = Math.min(H - 1, ((H + lineH) / 2) | 0);
 
@@ -366,6 +367,7 @@ function renderSprites(imgData) {
   const dX  = pDirX(),   dY  = pDirY();
   const plX = pPlaneX(), plY = pPlaneY();
   const invDet = 1 / (plX * dY - dX * plY);
+  const projDist = W / (2 * Math.tan(player.fov / 2));
 
   // Sort: farthest first so near sprites paint over far ones
   const sorted = enemies
@@ -381,7 +383,7 @@ function renderSprites(imgData) {
     if (tY <= 0.05) continue;
 
     const scrX = ((W / 2) * (1 + tX / tY)) | 0;
-    const sprH = Math.min(H * 3, (H / tY) | 0);
+    const sprH = Math.min(H * 3, (projDist / tY) | 0);
     const sprW = sprH;
 
     const x0 = Math.max(0, (scrX - sprW / 2) | 0);
